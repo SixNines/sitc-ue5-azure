@@ -1,0 +1,303 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: DCV
+Parameters:
+  KeyPairName:
+    Description: Keypair associated with the EC2 instance
+    Type: "AWS::EC2::KeyPair::KeyName"
+    MinLength: "1"
+    ConstraintDescription: Must provide a keypair to be associated with the EC2 instance
+  InstanceType:
+    Description: EC2 instance type. UE5 requires a GPU to function.
+    Type: String
+    Default: g4dn.2xlarge
+    AllowedValues:
+      - g4dn.xlarge
+      - g4dn.2xlarge
+      - g4dn.4xlarge
+  DiskSize:
+    Description: Disk size in GB. A minimum of 500GB is required to properly run UE5 resources.
+    Type: Number
+    Default: "500"
+    MinValue: "500"
+    ConstraintDescription: A minimum of 240GB is required.
+  Cidr:
+    Description: The IP address range that can be used to connect, leave 0.0.0.0/0 to connect from any address
+    Type: String
+    MinLength: 9
+    MaxLength: 18
+    AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
+    Default: 0.0.0.0/0
+    ConstraintDescription: CIDR must be in the form X.X.X.X/Y where X.X.X.X is an IP address and Y is the lenght of the mask.
+  UserPasswd:
+    Description: >-
+      Password for the "Administrator" user on Windows instances or for
+      "dcvuser" on Linux instances.
+    MinLength: "8"
+    Type: String
+    AllowedPattern: >-
+      ^((?=.*[a-z])(?=.*[A-Z])(?=.*[\d])|(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_])|(?=.*[a-z])(?=.*[\d])(?=.*[\W_])|(?=.*[A-Z])(?=.*[\d])(?=.*[\W_])).+$
+    ConstraintDescription: >-
+      Password must contain at least one element from three of the following
+      sets: lowercase letters, uppercase letters, base 10 digits,
+      non-alphanumeric characters
+    NoEcho: "true"
+  OsVersion:
+    Type: String
+    AllowedValues:
+      - WindowsServer2019
+    Default: WindowsServer2019
+Mappings:
+  RegionMap:
+    us-east-1:
+      WindowsServer2019: ami-0fa3230eeb7659b4a
+    us-west-1:
+      WindowsServer2019: ami-xxxxxxxxxxxxxxxxx
+    us-west-2:
+      WindowsServer2019: ami-xxxxxxxxxxxxxxxxx
+    us-east-2:
+      WindowsServer2019: ami-xxxxxxxxxxxxxxxxx
+    eu-central-1:
+      WindowsServer2019: ami-xxxxxxxxxxxxxxxxx
+    eu-west-1:
+      WindowsServer2019: ami-xxxxxxxxxxxxxxxxx
+    eu-west-2:
+      WindowsServer2019: ami-xxxxxxxxxxxxxxxxx
+    eu-west-3:
+      WindowsServer2019: ami-xxxxxxxxxxxxxxxxx
+    eu-north-1:
+      WindowsServer2019: ami-xxxxxxxxxxxxxxxxx
+  VersionMap:
+    firefox:
+      default: Firefox_Setup_57.0.exe
+Resources:
+  WindowsInstance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      InstanceType: !Ref InstanceType
+      IamInstanceProfile: !Ref RootInstanceProfile
+      ImageId: !FindInMap
+        - RegionMap
+        - !Ref "AWS::Region"
+        - !Ref OsVersion
+      SecurityGroupIds:
+        - !Ref DCVSecurityGroup
+      Tags:
+        - Key: RemoteVisualization
+          Value: DCV-preview
+        - Key: Name
+          Value: !Ref "AWS::StackName"
+        - Key: DCV
+          Value: DCV
+      KeyName: !Ref KeyPairName
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: !Ref DiskSize
+            VolumeType: gp2
+      UserData: !Base64
+        "Fn::Join":
+          - ""
+          - - |
+              <script>
+            - "cfn-init.exe -v "
+            - " -r WindowsInstance "
+            - " --region "
+            - !Ref "AWS::Region"
+            - " -s "
+            - !Ref "AWS::StackName"
+            - |+
+
+            - |
+              </script>
+    Metadata:
+      "AWS::CloudFormation::Authentication":
+        S3AccessCreds:
+          type: S3
+          roleName: !Ref RootRole
+      "AWS::CloudFormation::Init":
+        configSets:
+          default:
+            - download
+            - install
+            - restart
+        download:
+          files:
+            'C:\dcv-install\install.ps1':
+              source: !Join
+                - ""
+                - - >-
+                    https://s3-eu-west-1.amazonaws.com/nice-dcv-cfn/dcv-server-install.ps1
+              authentication: S3AccessCreds
+            'C:\dcv-install\conf.ps1':
+              content: !Join
+                - ""
+                - - "$depBucket = \"nice-dcv-cfn\"\r\n"
+                  - $firefoxPackage = "
+                  - !FindInMap
+                    - VersionMap
+                    - firefox
+                    - default
+                  - "\"\r\n"
+                  - "$userName = \"Administrator\"\r\n"
+                  - $userPasswd = "
+                  - !Ref UserPasswd
+                  - "\"\r\n"
+                  - "$logLevel = \"info\"\r\n"
+                  - $waitHandle = "
+                  - !Ref InstanceWaitHandle
+                  - "\"\r\n"
+                  - $windowsVersion = "
+                  - !Ref OsVersion
+                  - "\"\r\n"
+          services:
+            windows:
+              cfn-hup:
+                enabled: "true"
+                ensureRunning: "true"
+                files:
+                  - 'c:\cfn\cfn-hup.conf'
+                  - 'c:\cfn\hooks.d\cfn-auto-reloader.conf'
+              audiosrv:
+                enabled: "true"
+                ensureRunning: "true"
+          packages:
+            msi:
+              awscli: "https://s3.amazonaws.com/aws-cli/AWSCLI64.msi"
+              awstools: >-
+                http://sdk-for-net.amazonwebservices.com/latest/AWSToolsAndSDKForNet.msi
+        install:
+          commands:
+            install:
+              command: >-
+                powershell.exe -noprofile -executionpolicy bypass
+                C:\dcv-install\install.ps1 > C:\dcv-install\install.log
+              waitAfterCompletion: "0"
+              ignoreErrors: "true"
+        restart:
+          commands:
+            restart:
+              command: 'shutdown /r /t 10 /d p:4:1 /c "CloudFormation Restart"'
+              waitAfterCompletion: forever
+      "AWS::CloudFormation::Designer":
+        id: e5cac32e-b5c6-46ba-9430-1f9b7275b5b6
+  RootRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      Path: /
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: 6f9e3cf3-dc65-4bcc-a7aa-298486effe69
+  RolePolicies:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: DcvInstallAccess
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - "logs:*"
+              - "s3:*"
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - "s3:GetObject"
+            Resource: "arn:aws:s3:::nice-dcv-cfn/*"
+      Roles:
+        - !Ref RootRole
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: 7160187f-0a7e-451f-bcb1-85783245c504
+  RootInstanceProfile:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Path: /
+      Roles:
+        - !Ref RootRole
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: a36c5fb2-26ae-49c8-bffb-628118f2cd10
+  WindowsInstanceWaitCondition:
+    Type: "AWS::CloudFormation::WaitCondition"
+    DependsOn: WindowsInstance
+    Properties:
+      Handle: !Ref InstanceWaitHandle
+      Timeout: "5400"
+  InstanceWaitHandle:
+    Type: "AWS::CloudFormation::WaitConditionHandle"
+  DCVSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: DCV Security Group
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: "22"
+          ToPort: "22"
+          CidrIp: !Ref Cidr
+        - IpProtocol: tcp
+          FromPort: "3389"
+          ToPort: "3389"
+          CidrIp: !Ref Cidr
+        - IpProtocol: tcp
+          FromPort: "8443"
+          ToPort: "8443"
+          CidrIp: !Ref Cidr
+Outputs:
+  WindowsInstanceId:
+    Value: !Ref WindowsInstance
+  WindowsPublicDNS:
+    Value: !GetAtt
+      - WindowsInstance
+      - PublicDnsName
+    Description: DNS Name of the newly created EC2 instance
+  WindowsPublicIp:
+    Value: !GetAtt
+      - WindowsInstance
+      - PublicIp
+    Description: Public Ip of the newly created EC2 instance
+  WindowsDcvURL:
+    Value: !Join
+      - ""
+      - - "https://"
+        - !GetAtt
+          - WindowsInstance
+          - PublicIp
+        - ":8443"
+    Description: Dcv connection URL for the newly created EC2 instance
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: Software
+        Parameters:
+          - OsVersion
+      - Label:
+          default: Credentials
+        Parameters:
+          - UserPasswd
+      - Label:
+          default: EC2
+        Parameters:
+          - InstanceType
+          - DiskSize
+          - KeyPairName
+    ParameterLabels:
+      InstanceType:
+        default: "Instance Type:"
+      DiskSize:
+        default: "Disk Size:"
+      KeyPairName:
+        default: "Key pair name:"
+      UserPasswd:
+        default: "Password:"
+      OsVersion:
+        default: "Operating System:"

@@ -1,0 +1,36 @@
+@use "_variables.scss" as *;
+
+input,
+button,
+select {
+  height: 60px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border-radius: $border-radius !important;
+}
+
+button {
+  background-color: $button-default !important;
+  border-color: $button-default !important;
+
+  &:hover {
+    background-color: $button-active !important;
+    border-color: $button-active !important;
+  }
+}
+
+table,
+td,
+th {
+  text-align: center;
+}
+
+td {
+  vertical-align: middle;
+}
+
+table {
+  overflow-y: scroll !important;
+  height: 60vh;
+  display: block;
+}

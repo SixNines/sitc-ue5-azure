@@ -1,0 +1,855 @@
+@use "_variables.scss" as *;
+/* html,
+body {
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+  overflow-y: hidden;
+  overflow-x: hidden !important;
+} */
+// * {
+//   border: 1px solid red;
+// }
+
+* {
+  font-family: Arial, Helvetica, sans-serif;
+}
+body {
+  overflow-x: hidden !important;
+  color: $font-main;
+  background-color: $background-global;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.btn-create-resource {
+  width: 100px !important;
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
+}
+
+.background-color {
+  background-color: #121212 !important;
+}
+
+.foreground-color {
+  color: #262626 !important;
+}
+
+.text-color,
+.authorizedRouteWait,
+.unauthorizedText,
+.loginStatusText,
+.userDashboard,
+.userViewCard,
+.errorPage {
+  color: #ffffffda !important;
+}
+
+.userCardRow {
+  width: 100%;
+}
+
+.userViewCard {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: baseline;
+}
+
+.userRole {
+  margin-top: 0.25rem;
+}
+
+.form-control:not(active) {
+  background-color: #121212 !important;
+  color: white !important;
+}
+
+.form-control:focus {
+  background-color: #121212d5 !important;
+}
+
+select {
+  color: #ffffffda !important;
+  background-color: #121212 !important;
+}
+
+.userBtn {
+  width: 50px;
+  height: 2em;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.deleteBtn,
+.userCreateBtn {
+  width: 10em;
+  height: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.userCreateBtn {
+  border: none;
+  background-color: #444444;
+}
+
+.userCreateBtn:hover {
+  background-color: #6c757d;
+}
+
+.deleteBtnTxt {
+  height: 100%;
+  margin-right: 5px;
+  display: flex;
+  padding-top: 0.35em;
+}
+
+.userCreateBtnRow {
+  display: flex;
+  justify-content: center;
+}
+
+.userCreateBtnContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.deleteBtn {
+  background-color: #cd6133;
+  border: none;
+  margin: 5px;
+}
+
+.deleteBtn:hover {
+  background-color: #ff793f;
+}
+
+.userDashboardContainer {
+  width: 80%;
+  height: 100%;
+  flex-direction: row;
+  display: flex;
+  justify-content: center;
+}
+
+.userDashboard {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.userCardRow {
+  padding: 0;
+}
+
+.userCardButtons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.userCardButtonsRow {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.userListContainer {
+  overflow-y: scroll !important;
+  height: 60%;
+}
+
+.userCreateContainer {
+  height: 10%;
+  margin-top: 1rem;
+}
+
+.userQueryLimitContainer,
+.userList {
+  width: 80%;
+}
+
+.userQueryLimitContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 2em;
+  height: 5%;
+}
+
+.userQueryLimitInput {
+  width: 25%;
+  height: 2em;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.userCardContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+}
+
+.adminOptionsMenu {
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  margin-right: 2em;
+  border-width: thin;
+  border-style: solid;
+  border-right: thin solid #262626;
+}
+
+.adminMenuBtn {
+  border-radius: 0;
+  background-color: #262626;
+  border: none;
+}
+
+.adminMenuBtn:hover {
+  background-color: #444444;
+}
+
+.adminMenuBtnSelected {
+  border-radius: 0;
+  background-color: #6c757d;
+  border: none;
+}
+
+.userBtn {
+  background-color: #444444;
+  border: none;
+}
+
+.userBtn:focus,
+.adminMenuBtn:focus,
+.deleteBtn:focus,
+.userCreateBtn:focus,
+.navBtn:focus,
+.selectedNavBtn:focus,
+.saveUserBtn:focus {
+  outline: none !important;
+  outline-offset: none !important;
+  border: none;
+  box-shadow: none !important;
+}
+
+.userBtn:hover {
+  background-color: #6c757d;
+}
+
+.adminDashboard {
+  height: 100%;
+}
+
+.adminDashboardMenu {
+  display: flex;
+  height: 100%;
+}
+
+.adminDashboardHeader {
+  color: #fff;
+  width: 20%;
+  text-align: center;
+  margin-bottom: 1em;
+}
+
+.docsContainer {
+  background-color: #fff;
+}
+
+.createPage,
+.loginPage,
+.indexPage,
+.authorizedRoute,
+.authorizedRouteWait,
+.unauthorizedRoute {
+  background-color: #121212;
+  //height: 100%;
+}
+
+.errorPage {
+  background-color: #121212;
+  height: 100vh;
+}
+
+.signInBtn {
+  font-size: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  width: 250px !important;
+}
+
+.loginPage {
+  display: flex;
+  justify-content: center;
+}
+
+.authorizedRouteWait,
+.errorPage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.create-container {
+  margin-top: 20px;
+}
+
+.unauthorizedRoute {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.signInBtnContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.navContainer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.userList {
+  display: flex;
+  justify-content: center;
+}
+
+.userCard,
+.userCreateCard {
+  width: 75%;
+}
+
+.userCard {
+  margin-bottom: 1rem !important;
+}
+
+.userCreateCard {
+  background-color: #121212 !important;
+}
+
+.saveUserBtnContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.userEditCard {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.saveUserBtn {
+  background-color: #227093;
+  border: none;
+  width: 75%;
+}
+
+.saveUserBtn:hover,
+.saveUserBtn:focus {
+  background-color: #34ace0;
+}
+
+.userEditForm {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.userCardBody {
+  width: 100%;
+  padding: 0 !important;
+}
+
+.appContext,
+.appContextDocs {
+  height: 100vh;
+  width: 100%;
+}
+
+.appContextDocs {
+  overflow: scroll;
+}
+
+.appContext {
+  background-color: #121212;
+}
+
+.navBar {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.navBtn,
+.selectedNavBtn {
+  border: none;
+  border-radius: 0;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-right: thin solid #444444;
+  text-align: center;
+  width: 12rem;
+}
+
+.navBtn {
+  background-color: #262626;
+}
+
+.selectedNavBtn {
+  background-color: #6c757d;
+}
+
+.navBtn:hover {
+  background-color: #6c757d;
+}
+
+.btn-start-stop:disabled {
+  border-color: gray;
+  background-color: gray;
+}
+
+.banner-logo-six-nines {
+  // padding-top: 2px;
+  // padding-left: 5px;
+  margin: 30px;
+}
+
+.create-cost-table {
+  height: 200px;
+}
+
+.card {
+  margin-bottom: 20px;
+  padding: 30px;
+  align-items: center !important;
+
+  &.auth-card {
+    width: 630px !important;
+
+    .auth-card-header {
+      text-align: center !important;
+    }
+
+    label {
+      margin-top: 20px !important;
+    }
+  }
+}
+
+input,
+button,
+.card {
+  border-radius: $border-radius !important;
+}
+
+.indexPage {
+  .index-card {
+    margin-top: 20px;
+    padding: 10px;
+  }
+
+  button {
+    width: 100%;
+    height: 50px;
+  }
+
+  .create-resource-row {
+    display: flex;
+    justify-content: flex-end;
+    height: 90px;
+
+    .create-container {
+      justify-content: right;
+      margin-top: 0;
+    }
+
+    .col {
+      display: flex;
+      align-items: center;
+      align-content: center;
+    }
+    .btn-create-resource {
+      width: 300px !important;
+    }
+  }
+}
+
+// TODO: Perhaps move to pages file
+
+.loginPage {
+  .main-title {
+    text-align: center;
+    margin-bottom: 50px;
+    h1 {
+      font-weight: bold !important;
+    }
+  }
+  input,
+  button {
+    width: 570px !important;
+  }
+}
+
+.footer-section {
+  background-color: $background-component;
+  width: 100%;
+  position: fixed !important;
+  bottom: 0;
+  height: 76px;
+  margin: 0;
+  border-top-left-radius: $border-radius;
+  border-top-right-radius: $border-radius;
+
+  .footer-left,
+  .footer-right {
+    display: flex;
+    align-items: center;
+    margin-left: 30px;
+    padding: 0;
+  }
+
+  .footer-right {
+    justify-content: right;
+    margin-right: 30px;
+  }
+
+  .logo-unreal {
+    height: 56px;
+  }
+}
+
+.btn-danger {
+  background-color: $button-delete !important;
+  border-color: $button-delete !important;
+
+  &:hover {
+    background-color: $button-delete-active !important;
+    border-color: $button-delete-active !important;
+  }
+}
+
+.start-stop-div {
+  display: flex !important;
+  justify-content: center !important;
+  align-content: center !important;
+}
+
+.start-stop-switch {
+  background-color: $toggle-start !important;
+  border: none;
+  width: 90px !important;
+  box-shadow: none !important;
+  outline: none !important;
+  margin-bottom: 0px !important;
+  cursor: pointer;
+
+  &:checked {
+    background-color: $toggle-stop !important;
+
+    border: none;
+  }
+
+  &:not(:checked) {
+    background-color: $toggle-start !important;
+    border: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='white'/%3e%3c/svg%3e");
+    box-shadow: none !important;
+    outline: none !important;
+  }
+
+  &:disabled {
+    //background-color: black !important;
+    border: none;
+    //background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='white'/%3e%3c/svg%3e") !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+
+  &:focus {
+    box-shadow: none !important;
+    outline: none !important;
+    border: none !important;
+  }
+
+  &:active,
+  &:hover,
+  &:focus {
+    box-shadow: none !important;
+    outline: none !important;
+    border: none !important;
+  }
+
+  &:focus:not(:focus-visible) {
+    box-shadow: none !important;
+    outline: none !important;
+    border: none !important;
+  }
+
+  &::before {
+    box-shadow: none !important;
+    outline: none !important;
+    border: none !important;
+  }
+
+  &::after {
+    box-shadow: none !important;
+    outline: none !important;
+    border: none !important;
+  }
+}
+
+.no-gutters {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  width: 100%;
+
+  .form-group {
+    padding: 0 !important;
+  }
+  > .col,
+  > [class*="col-"] {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+  }
+}
+
+.estimate-col {
+  border: solid $font-main !important;
+  border-radius: $border-radius;
+  border-width: 4px !important;
+  margin: 15px;
+  text-align: center;
+  h3 {
+    margin-top: 10px;
+  }
+
+  hr {
+    border: none;
+    margin: auto;
+    width: 85%;
+    height: 5px;
+    background-color: $font-main;
+  }
+
+  .row {
+    margin-top: 40px;
+    font-size: 1.5em;
+  }
+
+  .row-total {
+    font-weight: bold;
+  }
+
+  .col-label {
+    text-align: right;
+  }
+}
+
+.ip-row {
+  width: 100%;
+}
+
+.row-create-cancel {
+  width: 100% !important;
+
+  .col {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .btn-create-resource {
+    width: 300px !important;
+    margin-left: 25px;
+  }
+
+  .btn-cancel-create {
+    width: 200px !important;
+    background-color: $button-cancel !important;
+    border: $font-main;
+    color: black;
+
+    &:hover {
+      background-color: $button-cancel-active !important;
+    }
+  }
+}
+
+.createPage {
+  .form-group {
+    margin-bottom: 20px !important;
+  }
+}
+
+.btn-nav-base {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: $button-default;
+  background-color: transparent !important;
+  border-radius: 0 !important;
+  border-bottom-width: 2px !important;
+
+  &:hover {
+    color: $button-default !important;
+    background-color: transparent !important;
+  }
+}
+
+.selectedNavBtn {
+  border-color: $button-default !important;
+  border-bottom: 1px !important;
+  border-width: 1px !important;
+  border: solid $button-default !important;
+  border-top: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+}
+
+.btn-cancel-create {
+  width: 200px !important;
+  background-color: $button-cancel !important;
+  border: $font-main;
+  color: black !important;
+
+  &:hover {
+    background-color: $button-cancel-active !important;
+  }
+}
+
+.btn-upgrade {
+  background-color: $background-global !important;
+  color: $button-upgrade !important;
+  border-color: $button-upgrade !important;
+  width: 200px;
+  margin-left: 25px;
+  margin-right: 25px;
+  border-width: 3px !important;
+  &:hover {
+    background-color: $button-upgrade !important;
+    color: $background-global !important;
+    border-color: $button-upgrade !important;
+  }
+}
+
+.btn-logout {
+  margin-right: 15px;
+}
+
+.adminPage {
+  .card-body {
+    width: 100%;
+  }
+
+  .table > :not(:first-child) {
+    border-top: 0 !important;
+  }
+
+  .table {
+    th,
+    tr {
+      border-top: none !important;
+      border-bottom: none !important;
+    }
+  }
+  .user-list-item {
+    border-radius: $border-radius !important;
+    background-color: black !important;
+    height: 60px;
+  }
+}
+
+.modal-dialog {
+  color: black;
+
+  .btn-close {
+    background-color: transparent !important;
+  }
+}
+
+.btn-delete-cancel {
+  color: black !important;
+  background-color: $button-cancel !important;
+  border-color: $button-cancel !important;
+
+  &:hover {
+    border-color: $button-cancel-active !important;
+    background-color: $button-cancel-active !important;
+    color: black !important;
+  }
+}
